@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>server-sent events</title>
+        <script>
+            const evtSource = new EventSource("/events");
+            evtSource.onmessage = (event) => {
+                const { type, data } = JSON.parse(event.data);
+                if (type === "initial") {
+                    renderInitial(data);
+                    return;
+                }
+
+                renderMessage(data);
+            };
+
+            function renderInitial(initialData) {
+                initialData.forEach((data) => renderMessage(data));
+            }
+
+            function renderMessage(data) {
+                const newElement = document.createElement("p");
+                const eventList = document.getElementById("facts");
+
+                newElement.textContent = `message: ${data.info}`;
+                eventList.appendChild(newElement);
+            }
+        </script>
+    </head>
+    <body>
+        <div id="facts"></div>
+    </body>
+</html>

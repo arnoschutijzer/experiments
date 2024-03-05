@@ -27,7 +27,7 @@ function eventsHandler(request: Request, response: Response) {
   };
   response.writeHead(200, headers);
 
-  const data = `data: ${JSON.stringify(facts)}\n\n`;
+  const data = `data: ${createEvent("initial", facts)}\n\n`;
 
   response.write(data);
 
@@ -46,11 +46,15 @@ function eventsHandler(request: Request, response: Response) {
   });
 }
 
+function createEvent(type, data) {
+  return JSON.stringify({ type, data });
+}
+
 app.get("/events", eventsHandler);
 
 function sendEventsToAll(newFact) {
   clients.forEach((client) =>
-    client.response.write(`data: ${JSON.stringify(newFact)}\n\n`),
+    client.response.write(`data: ${createEvent("new", newFact)} \n\n`),
   );
 }
 
@@ -62,6 +66,7 @@ async function addFact(request, response, next) {
 }
 
 app.post("/fact", addFact);
+app.use("/static", express.static("index.html"));
 
 app.listen(3123, () => {
   console.log(`listening`);
