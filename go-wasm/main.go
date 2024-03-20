@@ -17,6 +17,13 @@ func main() {
 	})
 	js.Global().Get("document").Call("getElementById", "myButton").Call("addEventListener", "click", cb)
 
+	js.Global().Set("add", js.FuncOf(addFunction))
+
 	// Prevent from exiting
 	select {}
+}
+
+func addFunction(this js.Value, p []js.Value) interface{} {
+	sum := p[0].Int() + p[1].Int()
+	return js.ValueOf(sum)
 }
