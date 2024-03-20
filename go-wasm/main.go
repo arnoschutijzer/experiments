@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"syscall/js"
 )
@@ -18,6 +19,7 @@ func main() {
 	js.Global().Get("document").Call("getElementById", "myButton").Call("addEventListener", "click", cb)
 
 	js.Global().Set("add", js.FuncOf(addFunction))
+	js.Global().Set("getJohn", js.FuncOf(getJohn))
 
 	// Prevent from exiting
 	select {}
@@ -26,4 +28,17 @@ func main() {
 func addFunction(this js.Value, p []js.Value) interface{} {
 	sum := p[0].Int() + p[1].Int()
 	return js.ValueOf(sum)
+}
+
+type Person struct {
+	Name string `json:"name"`
+}
+
+func getJohn(this js.Value, p []js.Value) interface{} {
+	objJSON, err := json.Marshal(&Person{Name: "John"})
+	if err != nil {
+		return err.Error()
+	}
+
+	return js.ValueOf(string(objJSON))
 }
